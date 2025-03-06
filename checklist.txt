@@ -1,0 +1,9 @@
+Fix the Cursor movement
+Non-Word message
+Click each letter
+
+
+02.28.25:
+Disable Rows
+Fixed Colors on Reset
+Enter Key

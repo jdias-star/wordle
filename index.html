@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@583&display=swap" rel="stylesheet">
+    <style>
+
+        @keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+        span{
+            margin-top: 10px;
+        }
+        *{
+            overflow: hidden;
+            font-family: "Playpen Sans", cursive;
+        }
+        .modal {
+            padding: 1rem;
+            background-color: lightgreen;
+            border: 4px solid black;
+            display: flex;
+            flex-direction: column;
+            width: 50vw;
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #title {
+        display: flex;
+        gap: 10px; /* Adjust this value to control the spacing */
+        align-content: center;
+    }
+        .title-letter {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        border: 2px solid black;
+        font-size: 24px;
+        font-weight: bold;
+        background-color: #D1D3D4;
+        text-transform: uppercase;
+        align-items: center;
+        margin-bottom: 5px;
+        margin-top: 0;
+        justify-content: center;
+}
+
+        
+    body {
+    font-family: "Playpen Sans", cursive;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(to top left, #ffadad, #ffd6a5, #fdffb6, #caffbf, #9bf6ff, #a0c4ff, #bdb2ff, #ffc6ff, #ffadad, #ffd6a5);
+    background-size: 400% 400%;
+    animation: gradientAnimation 0.0001s linear infinite;
+}
+
+#alert-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);  /* Darker background for contrast */
+    padding: 40px 60px;  /* Large padding */
+    border-radius: 10px;
+    color: #D1D3D4;
+    font-size: 24px;  /* Larger text */
+    font-weight: bold;
+    text-align: center;
+    z-index: 9999;  /* Make sure alert is on top */
+    opacity: 1;
+}
+
+#wordBox {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);  /* Darker background for contrast */
+    padding: 40px 60px;  /* Large padding */
+    border-radius: 10px;
+    color: #D1D3D4;
+    font-size: 24px;  /* Larger text */
+    font-weight: bold;
+    text-align: center;
+    z-index: 9999;  /* Make sure alert is on top */
+    opacity: 1;
+}
+
+button{
+    background:none; 
+    border:none;
+    font-weight: bolder;
+    font-size: large;
+}
+
+.pop-up button{
+    color: white;
+}
+button:hover {
+    color: green;
+}
+
+
+
+.hidden {
+  display: none;
+  z-index: 0;
+}
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            gap: 5px;
+            justify-content: center;
+            align-items: center;
+            width: fit-content;
+            margin-top: 20px;
+        }
+
+        .grid input {
+            width: 60px;
+            height: 60px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            border: 2px solid black;
+            text-transform: uppercase;
+            box-sizing: border-box;
+            color: black;
+            font-family: "Playpen Sans", cursive;
+            background-color: #787c7e;
+        }
+
+        #letter-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            gap: 5px;
+            justify-content: center;
+            align-items: center;
+            width: fit-content;
+            margin-top: 20px;
+        }
+
+        .empty{
+            background-color: transparent;
+            border-color: transparent;
+        }
+        .letter {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid black;
+            font-size: 24px;
+            font-weight: bold;
+            background-color: #D1D3D4;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .correct {
+            background-color: green;
+        }
+
+        .different {
+            background-color: yellow;
+        }
+
+        .wrong {
+            background-color: #787c7e;
+        }
+
+        ul {
+            margin: 0;
+        }
+
+        #information{
+            padding: 0px;
+            margin: -10px;
+        }
+
+        .pop-up p{
+            color: white;
+        }
+
+
+
+        
+    </style>
+</head>
+<body class="background">
+    <div id="modal" class="modal" class="background">
+        <h1><b>How To Play</b></h1>
+        <div id="title">
+            <span class="title-letter">W</span>
+            <span class="title-letter">O</span>
+            <span class="title-letter">R</span>
+            <span class="title-letter">D</span>
+            <span class="title-letter">L</span>
+            <span class="title-letter">E</span>
+        </div>
+        <ul>Guess the word in 6 tries.</ul>
+        <ul>Each guess must be a valid 5-letter word.</ul>
+        <p><b>Color Meaning</b></p>
+        <li><b style="color: green;">Green:</b> The letter is in the correct spot</li>
+        <li><b style="color: yellow;">Yellow:</b> The letter is in the word, but not correct spot</li>
+        <li><b style="color: #787c7e;">Gray:</b> The letter isn't in the word</li>
+        <br>
+        <button onclick="closeModal()" id="modal-close">Continue to Game</button>
+    </div>
+    
+    <h1 id="title">
+        <div id="title">
+            <span class="title-letter" >W</span>
+            <span class="title-letter">O</span>
+            <span class="title-letter">R</span>
+            <span class="title-letter">D</span>
+            <span class="title-letter">L</span>
+            <span class="title-letter">E</span>
+        </div>
+    </h1>
+    <button id="information" onclick="openModal()">How To Play</button>
+    <div class="grid">
+        <input class="row1" type="text" maxlength="1"><input class="row1" type="text" maxlength="1"><input class="row1" type="text" maxlength="1"><input class="row1" type="text" maxlength="1"><input class="row1" type="text" maxlength="1">
+        <input class="row2" type="text" maxlength="1"><input class="row2" type="text" maxlength="1"><input class="row2" type="text" maxlength="1"><input class="row2" type="text" maxlength="1"><input class="row2" type="text" maxlength="1">
+        <input class="row3" type="text" maxlength="1"><input class="row3" type="text" maxlength="1"><input class="row3" type="text" maxlength="1"><input class="row3" type="text" maxlength="1"><input class="row3" type="text" maxlength="1">
+        <input class="row4" type="text" maxlength="1"><input class="row4" type="text" maxlength="1"><input class="row4" type="text" maxlength="1"><input class="row4" type="text" maxlength="1"><input class="row4" type="text" maxlength="1">
+        <input class="row5" type="text" maxlength="1"><input class="row5" type="text" maxlength="1"><input class="row5" type="text" maxlength="1"><input class="row5" type="text" maxlength="1"><input class="row5" type="text" maxlength="1">
+        <input class="row6" type="text" maxlength="1"><input class="row6" type="text" maxlength="1"><input class="row6" type="text" maxlength="1"><input class="row6" type="text" maxlength="1"><input class="row6" type="text" maxlength="1">
+    </div>
+    <div id="alert-box" class="hidden" class="pop-up" >
+        <p style="color: white; display: inline-block;" 
+        onmouseover="this.style.color='green'" 
+        onmouseout="this.style.color='white'">This is not in our Word List</p>
+        <p id="phrase" style="color: white; display: inline-block;" 
+        onmouseover="this.style.color='green'" 
+        onmouseout="this.style.color='white'"></p>
+    </div>
+
+    <div id="wordBox" class="hidden" class="pop-up" >
+        <p id="phrase2"></p>
+        <p id="correctWord"></p>
+        <button onclick="resetGame()" style="color: white; display: inline-block;" 
+        onmouseover="this.style.color='green'" 
+        onmouseout="this.style.color='white'">Do you want to try again?</button>
+    </div>
+
+    <div id="word-box" class="hidden" class="pop-up">
+        <p id="phrase3"></p>
+        <p id="correctWord"></p>
+        <button onclick="resetGame()" style="color: white; display: inline-block;" 
+        onmouseover="this.style.color='green'" 
+        onmouseout="this.style.color='white'">Do you want to try again?</button>
+    </div>
+      
+  
+    <span>
+    <button onclick="checkGuess()">Submit</button> 
+    <button onclick="resetGame()">Reset</button></span>
+
+    <div id="letter-grid">
+        <div id="letter-Q" class="letter">Q</div>
+        <div id="letter-W" class="letter">W</div>
+        <div id="letter-E" class="letter">E</div>
+        <div id="letter-R" class="letter">R</div>
+        <div id="letter-T" class="letter">T</div>
+        <div id="letter-Y" class="letter">Y</div>
+        <div id="letter-U" class="letter">U</div>
+        <div id="letter-I" class="letter">I</div>
+        <div id="letter-O" class="letter">O</div>
+        <div id="letter-P" class="letter">P</div>
+        <div id="letter-A" class="letter">A</div>
+        <div id="letter-S" class="letter">S</div>
+        <div id="letter-D" class="letter">D</div>
+        <div id="letter-F" class="letter">F</div>
+        <div id="letter-G" class="letter">G</div>
+        <div id="letter-H" class="letter">H</div>
+        <div id="letter-J" class="letter">J</div>
+        <div id="letter-K" class="letter">K</div>
+        <div id="letter-L" class="letter">L</div>
+        <div id="letter-Z" class="letter">Z</div>
+        <div class="letter, empty"> </div>
+        <div class="letter, empty"> </div>
+        <div id="letter-X" class="letter">X</div>
+        <div id="letter-C" class="letter">C</div>
+        <div id="letter-V" class="letter">V</div>
+        <div id="letter-B" class="letter">B</div>
+        <div id="letter-N" class="letter">N</div>
+        <div id="letter-M" class="letter">M</div>
+    </div>
+
+    <script src="brains.js"></script>
+</body>
+</html>

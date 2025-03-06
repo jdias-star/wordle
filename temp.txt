@@ -1,0 +1,277 @@
+
+function getWord() {
+  randomNumber = Math.floor(Math.random() * possibleCorrect.length);
+  //   console.log(randomNumber);
+  correctWord = possibleCorrect[randomNumber];
+  console.log(correctWord);
+  return correctWord;
+}
+
+function getLetter() {
+  const word = correctWord;
+  let wordArray = [];
+  for (let i = 0; i < word.length; i++) {
+    const letter = word[i];
+    // console.log(letter);
+    wordArray.push(letter.toUpperCase());
+  }
+
+  return wordArray;
+}
+
+function getuserLetter() {
+  const word = document.getElementsByClassName("row" + currRow);
+  let wordArray = [];
+  for (let i = 0; i < word.length; i++) {
+    const letter = word[i].value;
+
+    if (letter.length == 0){
+        break
+    }
+        wordArray.push(letter.toUpperCase());
+    
+    // console.log(letter);
+   
+  }
+
+  return wordArray;
+}
+
+function disableRows() {
+  let inputs = document.querySelectorAll('.grid > input');
+    inputs.forEach(input => {
+        if(input.classList.contains(`row${currRow}`)){
+            if(input.style.background = "#787c7e"){
+                input.style.background="#D1D3D4"
+            }
+            input.removeAttribute("disabled")
+        }else{
+            input.setAttribute("disabled", true)
+            // if(input.style.background !== "yellow" || input.style.background !== "green"){
+            //     input.style.background = "#787c7e";
+            // }
+        }
+        // if(input.classList)
+        // 
+    }) 
+}
+
+
+function checkGuess() {
+    let userWord = getuserLetter();
+    let correctWord = getLetter();
+
+    // word isn't long enough
+    if (userWord.length < 5) {
+        
+      return;
+    }
+  
+    // Validate if the user word is a valid word
+    if (!possibleWords.includes(userWord.join("").toLowerCase())) {
+        notCorrect()
+        
+      return;
+    }
+
+  
+    let inputBoxes = document.getElementsByClassName("row" + currRow);
+    
+    // Create a copy of the correctWord for comparison, since we need to mark used letters
+    let correctWordCopy = [...correctWord];
+    
+    // First, check for exact matches (correct position)
+    for (let i = 0; i < correctWord.length; i++) {
+
+
+      if (userWord[i] === correctWord[i]) {
+        inputBoxes[i].style.background = "green";
+
+        document.getElementById(`letter-${userWord[i].toUpperCase()}`).style.background = "green";
+        correctWordCopy[i] = null;  // Mark this letter as used
+      }
+    }
+  
+    // Now check for partial matches (correct letter, wrong position)
+    for (let i = 0; i < correctWord.length; i++) {
+      if (userWord[i] !== correctWord[i] && correctWordCopy.includes(userWord[i])) {
+        console.log(userWord[i])
+        inputBoxes[i].style.background = "yellow";
+        
+        document.getElementById(`letter-${userWord[i].toUpperCase()}`).style.background = "yellow";
+        // Mark the letter as used
+        correctWordCopy[correctWordCopy.indexOf(userWord[i])] = null;
+        console.log(correctWordCopy)
+      }else
+      if (userWord[i] !== correctWord[i] && !correctWordCopy.includes(userWord[i])) {
+        inputBoxes[i].style.background = "#787c7e";
+        
+        if(document.getElementById(`letter-${userWord[i].toUpperCase()}`).style.background !== "yellow" || document.getElementById(`letter-${userWord[i].toUpperCase()}`).style.background !== "green"){
+            document.getElementById(`letter-${userWord[i].toUpperCase()}`).style.background = "#787c7e";
+        }
+        }
+        
+    }
+
+    currRow++;  // Move to the next row
+
+    if (currRow == 7 && userWord !== correctWord){
+        finalGuess()
+    }
+
+    if (userWord === correctWord){
+        console.log(currRow, "currRow")
+        let answerRow = currRow - 1
+        console.log(answerRow, "answerRow")
+        
+        let inputs = document.querySelectorAll('.grid > input');
+    
+        inputs.forEach(input => {
+    if (input.classList.contains(`row${answerRow}`)) {
+        input.removeAttribute("disabled");
+        input.style.background="#D1D3D4"
+    } else {
+        input.setAttribute("disabled", true);
+    }
+    });
+    }
+    
+    disableRows()
+
+    return userWord;
+}
+  
+function notCorrect(){    
+    let phrase = meanPhrases[Math.floor(Math.random() * meanPhrases.length)];
+    let phrasePicked = document.getElementById('phrase')
+    phrasePicked.innerHTML = phrase
+    
+    document.getElementById("alert-box").classList.remove("hidden");
+    setTimeout(() => {
+    document.getElementById("alert-box").classList.add("hidden");
+    }, ((100 * phrase.length) - 1000));
+}
+
+function finalGuess(){
+    let phrase = finalPhrases[Math.floor(Math.random() * finalPhrases.length)];
+    let phrasePicked = document.getElementById('phrase2')
+    phrasePicked.innerHTML = phrase
+
+    let wordPicked = document.getElementById('correctWord')
+    wordPicked.innerHTML = correctWord.toUpperCase()
+    
+    document.getElementById("wordBox").classList.remove("hidden");
+}
+
+function moveToNextInput(event) {
+    event.preventDefault()
+    const currentInput = event.target;
+    let nextInput;
+  
+    if (event.key !== 'Backspace' && event.key !== 'Delete' && event.key !== 'ArrowLeft') {
+        
+        if (event.key === 'Tab' || event.key === 'ArrowRight') {
+            nextInput = currentInput.nextElementSibling;
+            nextInput.focus();
+            return
+        }else if(event.key && event.key.length == 1){
+            // console.log(event.key)
+            currentInput.value = event.key;
+            nextInput = currentInput.nextElementSibling;
+            nextInput.focus();
+            return
+        }
+        
+    } else{
+        nextInput = currentInput.previousElementSibling;
+        nextInput.focus();
+        return
+    }
+  }
+
+  let backspacePressCount = 0;
+  let backspaceTimeout;
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Backspace' || event.key === 'Delete') {
+      console.log(event.key);
+  
+      if (event.key === 'Backspace') {
+        clearTimeout(backspaceTimeout);
+  
+        backspacePressCount++;
+        if (backspacePressCount === 2) {
+          const currentInput = event.target;
+          const previousInput = currentInput.previousElementSibling;
+          
+          if (previousInput && previousInput.tagName === "INPUT") {
+            previousInput.focus();
+          }
+  
+          backspacePressCount = 0;
+        } else {
+          backspaceTimeout = setTimeout(() => {
+            backspacePressCount = 0;
+          }, 500);
+        }
+      }
+    } else {
+      moveToNextInput(event);
+    }
+  });
+
+
+const inputs = document.querySelectorAll("input");
+inputs.forEach((input) => {
+  input.addEventListener("change",  moveToNextInput);
+});
+
+console.log(getWord());
+// console.log(getLetter())
+
+function resetGame() {
+    getWord();
+    currRow = 1;
+    console.log(currRow);
+    const inputBoxes = document.querySelectorAll(".row1, .row2, .row3, .row4, .row5, .row6");
+
+    inputBoxes.forEach(inputBox => {
+        inputBox.value = "";
+        inputBox.style.background = "#787c7e";
+    });
+
+    const letterBoxes = document.querySelectorAll(".letter");
+    letterBoxes.forEach(letterBox => {
+    letterBox.style.background = "#D1D3D4";
+    });
+
+    const typeElements = document.getElementsByTagName("input");
+    for (let element of typeElements) {
+        element.value = "";
+    }
+
+    document.getElementById("wordBox").classList.add("hidden");
+    disableRows()
+}
+
+document.getElementById("wordBox").classList.add("hidden");
+//  document.getElementById("modal-close").addEventListener("click", function () {
+//             document.getElementById("modal").style.display = "none";
+//         });
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        checkGuess();
+    }
+});
+
+function closeModal(){
+    document.getElementById("modal-close").addEventListener("click", function () {
+        document.getElementById("modal").classList.remove = "modal";
+    });
+}
+
+function openModal(){
+    document.getElementById("modal-close").addEventListener("click", function () {
+        document.getElementById("modal").classList.add = "modal";
+    });
+}
