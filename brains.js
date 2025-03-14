@@ -15593,10 +15593,10 @@ function checkGuess() {
         console.log(phrase3)
         phrasePicked.innerHTML = phrase3
 
-        let wordPicked = document.getElementById('correctWord')
+        let wordPicked = document.getElementById('correctWord2')
         wordPicked.innerHTML = correctWord.join("")/*.toUpperCase()*/
     
-        document.getElementById("wordBox").classList.remove("hidden");
+        document.getElementById("word-box").classList.remove("hidden");
         return;
     }
 
@@ -15772,10 +15772,13 @@ function resetGame() {
     }
 
     document.getElementById("wordBox").classList.add("hidden");
+    document.getElementById("word-box").classList.add("hidden");
     disableRows()
 }
 
 document.getElementById("wordBox").classList.add("hidden");
+document.getElementById("word-box").classList.add("hidden");
+
 //  document.getElementById("modal-close").addEventListener("click", function () {
 //             document.getElementById("modal").style.display = "none";
 //         });
